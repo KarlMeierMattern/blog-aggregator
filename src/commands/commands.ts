@@ -1,20 +1,8 @@
-import { setUser } from "./config";
-
 export type CommandsRegistry = Record<string, CommandHandler>;
-export type CommandHandler = (cmdName: string, ...args: string[]) => void;
-
-export const handlerLogin: CommandHandler = (
+export type CommandHandler = (
   cmdName: string,
   ...args: string[]
-) => {
-  if (args.length === 0) {
-    throw new Error(`${cmdName} expects a single argument`);
-  }
-
-  setUser(args[0]);
-
-  console.log(`Username set to ${args[0]}`);
-};
+) => Promise<void>;
 
 export const registerCommand = (
   cmdName: string,
@@ -28,7 +16,7 @@ export const registerCommand = (
   registry[cmdName] = handler;
 };
 
-export const runCommand = (
+export const runCommand = async (
   cmdName: string,
   registry: CommandsRegistry,
   ...args: string[]
@@ -37,5 +25,5 @@ export const runCommand = (
   if (!handler) {
     throw new Error(`Unknown command: ${cmdName}`);
   }
-  handler(cmdName, ...args);
+  await handler(cmdName, ...args);
 };
