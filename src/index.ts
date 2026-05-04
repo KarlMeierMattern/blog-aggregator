@@ -9,6 +9,7 @@ import {
   reset,
   getAllUsers,
 } from "./commands/users";
+import { handlerAgg } from "./commands/aggregate";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -26,6 +27,7 @@ async function main() {
   registerCommand("register", commandsRegistry, handlerRegister);
   registerCommand("reset", commandsRegistry, reset);
   registerCommand("users", commandsRegistry, getAllUsers);
+  registerCommand("agg", commandsRegistry, handlerAgg);
 
   if (args.length === 0) {
     console.error("No command provided");

@@ -7,6 +7,12 @@ export type Config = {
   currentUserName: string;
 };
 
+/*
+~/.gatorconfig.json serves as a lightweight, persistent configuration file for the CLI application. It stores two key pieces of state:
+- db_url - the connection string to the database, so you don't have to pass it as an argument every time you run a command.
+- current_user_name - tracks which user is currently "logged in," so the CLI knows whose session is active across separate invocations.
+*/
+
 const getConfigFilePath = (): string => {
   return path.join(os.homedir(), ".gatorconfig.json");
 };

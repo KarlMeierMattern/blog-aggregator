@@ -9,7 +9,7 @@ export const registerCommand = (
   registry: CommandsRegistry,
   handler: CommandHandler
 ) => {
-  // This function registers a new handler function for a command name.
+  // This function registers a new handler function for a command name
   if (registry[cmdName]) {
     throw new Error(`Command ${cmdName} is already registered`);
   }
