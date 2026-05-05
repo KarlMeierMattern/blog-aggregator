@@ -1,11 +1,6 @@
 import type { CommandHandler } from "./commands";
 import { readConfig, setUser } from "src/config";
-import {
-  createUser,
-  getUser,
-  deleteUsers,
-  getUsers,
-} from "src/lib/db/queries/users";
+import { createUser, deleteUsers, getUsers } from "src/lib/db/queries/users";
 
 export const handlerLogin: CommandHandler = async (
   cmdName: string,
@@ -16,17 +11,14 @@ export const handlerLogin: CommandHandler = async (
   }
 
   const user = args[0];
-  const existingUser = await getUser(user);
-  if (!existingUser) {
-    throw new Error(`User ${user} not found`);
-  }
-
-  setUser(existingUser.name);
-
+  setUser(user);
   console.log("User switched successfully");
 };
 
-export const handlerRegister = async (cmdName: string, ...args: string[]) => {
+export const handlerRegister: CommandHandler = async (
+  cmdName: string,
+  ...args: string[]
+) => {
   if (args.length != 1) {
     throw new Error(`Usage: ${cmdName} <name>`);
   }

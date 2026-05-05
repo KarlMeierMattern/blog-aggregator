@@ -10,9 +10,15 @@ import {
   getAllUsers,
 } from "./commands/users";
 import { handlerAgg } from "./commands/aggregate";
+import { handlerAddFeed } from "./commands/feeds";
+import { handlerListFeeds } from "./commands/feeds";
+import { handlerFollow } from "./commands/follow";
+import { handlerFollowing } from "./commands/following";
+import { handlerUnfollow } from "./commands/unfollow";
+import { middlewareLoggedIn } from "./auth";
 
 async function main() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(2); //process.argv = ["node", "tsx src/index.ts", "addfeed", "Hacker News RSS", "https://hnrss.org/newest"]
 
   if (args.length < 1) {
     console.log("usage: cli <command> [args...]");
@@ -20,7 +26,7 @@ async function main() {
   }
 
   const cmdName = args[0];
-  const cmdArgs = args[1];
+  const cmdArgs = args.slice(1);
   const commandsRegistry: CommandsRegistry = {};
 
   registerCommand("login", commandsRegistry, handlerLogin);
@@ -28,6 +34,27 @@ async function main() {
   registerCommand("reset", commandsRegistry, reset);
   registerCommand("users", commandsRegistry, getAllUsers);
   registerCommand("agg", commandsRegistry, handlerAgg);
+  registerCommand("feeds", commandsRegistry, handlerListFeeds);
+  registerCommand(
+    "addfeed",
+    commandsRegistry,
+    middlewareLoggedIn(handlerAddFeed)
+  );
+  registerCommand(
+    "follow",
+    commandsRegistry,
+    middlewareLoggedIn(handlerFollow)
+  );
+  registerCommand(
+    "following",
+    commandsRegistry,
+    middlewareLoggedIn(handlerFollowing)
+  );
+  registerCommand(
+    "unfollow",
+    commandsRegistry,
+    middlewareLoggedIn(handlerUnfollow)
+  );
 
   if (args.length === 0) {
     console.error("No command provided");
@@ -35,7 +62,7 @@ async function main() {
   }
 
   try {
-    await runCommand(cmdName, commandsRegistry, cmdArgs);
+    await runCommand(cmdName, commandsRegistry, ...cmdArgs);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
