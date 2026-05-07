@@ -1,5 +1,5 @@
 import { db } from "..";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { feeds, feedFollows, users } from "../schema";
 import { firstOrUndefined } from "./utils";
 
@@ -91,4 +91,20 @@ export async function deleteFeedFollow(userId: string, url: string) {
     .where(
       and(eq(feedFollows.userId, userId), eq(feedFollows.feedId, feed.id))
     );
+}
+
+export async function markFeedFetched(id: string) {
+  await db
+    .update(feeds)
+    .set({ lastFetchedAt: new Date(), updatedAt: new Date() })
+    .where(eq(feeds.id, id));
+}
+
+export async function getNextFeedToFetch() {
+  const result = await db
+    .select()
+    .from(feeds)
+    .orderBy(sql`${feeds.lastFetchedAt} ASC NULLS FIRST`)
+    .limit(1);
+  return firstOrUndefined(result);
 }
